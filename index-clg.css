@@ -1,0 +1,42 @@
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#parent{
+    margin: 10px;
+    height: 300px;
+    width: 250px;
+    /* background-color: red; */
+    border-radius: 11px;
+    background-color: whitesmoke;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    position: relative;
+}
+#child b{
+    height: 50%;
+    width: 40%;
+    position: absolute;
+  
+}
+#child a{
+    height: 50%;
+    width: 100%;
+}
+ #child-a img{
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+}
+#child-b img{
+    height: 40%;
+    width: 50%;
+    position: absolute;
+    bottom: 130px;
+    left: 45px;
+}
+#child-b img{
+    border-radius: 50%;
+}
