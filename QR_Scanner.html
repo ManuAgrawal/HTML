@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Authenticity Checker</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #qr-reader-container {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 2px solid #4a5568;
+            transition: border-color 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .loader {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #5a67d8;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md mx-auto bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
+       
+        <div class="text-center">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-100">QR Authenticity Checker</h1>
+            </div>
+            <p class="text-gray-400">Community-powered protection for your UPI payments.</p>
+        </div>
+
+        
+        <div class="bg-gray-900 p-4 rounded-xl">
+            <div id="qr-reader-container" class="w-full aspect-square bg-gray-700 rounded-lg flex items-center justify-center">
+                <div id="qr-reader" class="w-full"></div>
+                <div id="qr-reader-placeholder" class="text-gray-500 text-center p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2"><path d="M3 3h18v18H3zM21 21v0M21 3v0M3 21v0M3 3v0"></path><line x1="12" y1="3" x2="12" y2="21"></line><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+                    Camera feed or uploaded QR will appear here
+                </div>
+            </div>
+            <div id="result-container" class="mt-4 text-center hidden"></div>
+        </div>
+
+        
+        <div id="action-buttons-container" class="flex flex-col sm:flex-row gap-4">
+            <button id="start-scan-btn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                Scan Camera
+            </button>
+            <button id="upload-qr-btn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Upload QR
+            </button>
+        </div>
+        <input type="file" id="qr-file-input" accept="image/*" class="hidden">
+        <button id="stop-scan-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 hidden items-center justify-center gap-2">Stop Scan</button>
+
+        
+        <div class="bg-gray-900/50 p-4 rounded-lg">
+            <h3 class="font-semibold text-gray-300 mb-3 text-center text-lg">Future Scope & Vision</h3>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <h4 class="font-semibold text-indigo-300">Next Steps:</h4>
+                    <ul class="list-disc list-inside text-gray-400 pl-2 mt-1 space-y-1">
+                        <li>Launch alpha for beta testers.</li>
+                        <li>Add community QR verification features.</li>
+                        <li>Partner with banks for validated lists.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-indigo-300">Scalability:</h4>
+                    <ul class="list-disc list-inside text-gray-400 pl-2 mt-1 space-y-1">
+                        <li>Utilize AI/ML to detect emerging fraud patterns.</li>
+                        <li>Expand to cover all digital payment endpoints.</li>
+                        <li>Offer a public API for third-party integrations.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-indigo-300">Long-Term Vision:</h4>
+                    <ul class="list-disc list-inside text-gray-400 pl-2 mt-1 space-y-1">
+                        <li>Become a trusted open-source standard for verification.</li>
+                        <li>Secure digital transactions for all.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, runTransaction, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        
+        const startScanBtn = document.getElementById('start-scan-btn');
+        const stopScanBtn = document.getElementById('stop-scan-btn');
+        const uploadQrBtn = document.getElementById('upload-qr-btn');
+        const qrFileInput = document.getElementById('qr-file-input');
+        const actionButtonsContainer = document.getElementById('action-buttons-container');
+        const resultContainer = document.getElementById('result-container');
+        const qrReaderContainer = document.getElementById('qr-reader-container');
+        const qrReaderPlaceholder = document.getElementById('qr-reader-placeholder');
+
+        const uploadBtnOriginalHtml = uploadQrBtn.innerHTML;
+
+        
+        const trustedUpiHandles = { 'okaxis': 'OKAxis Bank', 'okhdfcbank': 'OKHDFC Bank', 'oksbi': 'OKState Bank of India', 'okicici': 'OKICICI Bank', 'paytm': 'Paytm Payments Bank', 'ybl': 'Yes Bank Ltd (PhonePe)', 'axl': 'Axis Bank Ltd (Freecharge)', 'ibl': 'ICICI Bank Ltd (Google Pay)', 'apl': 'Axis Bank Ltd (Amazon Pay)', 'upi': 'BHIM (Default Handle)'};
+
+        let html5QrCode = null;
+        let db, auth;
+
+        function initializeQrCodeScanner() {
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+        }
+
+        
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_WEB_APP_ID"
+        };
+        
+        
+        const appId = 'vs-code-local-test';
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setLogLevel('debug');
+            
+           
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    console.log("User is signed in anonymously:", user.uid);
+                } else {
+                    signInAnonymously(auth).catch(error => console.error("Anonymous sign-in failed:", error));
+                }
+            });
+
+        } catch (e) {
+            console.error("Firebase initialization failed. Please check your firebaseConfig.", e);
+            displayResult('error', 'Service Unavailable', 'Could not connect to the community database. Please check your Firebase configuration.');
+        }
+
+       
+        const API_KEY = ""; 
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+
+        async function analyzeWithGemini(data) {
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const aiResultDiv = document.getElementById('ai-result');
+            if (!analyzeBtn || !aiResultDiv) return;
+
+            if (!API_KEY) {
+                 aiResultDiv.innerHTML = `<p class="text-red-300 mt-3">Gemini API Key is missing.</p>`;
+                 return;
+            }
+
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<div class="loader"></div> Analyzing...';
+
+            let userQuery;
+            const systemPrompt = "You are a helpful financial security assistant. Analyze the provided UPI payment details for potential fraud risks and provide concise, easy-to-understand advice. Do not use markdown.";
+
+            if (data.type === 'unrecognized') {
+                userQuery = `A UPI handle "@${data.handle}" is not in my trusted list. What are the potential risks and what safety precautions should I take?`;
+            } else if (data.type === 'community_warning') {
+                userQuery = `A UPI handle "@${data.handle}" is not bank-verified and has been reported as fraudulent by ${data.fraudCount} users versus ${data.safeCount} safe reports. What are the major risks and what should I do?`;
+            } else { 
+                userQuery = `My scanner returned text that isn't a valid UPI ID: "${data.rawText}". Why is this risky and what should I do?`;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] }})
+                });
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                aiResultDiv.innerHTML = text ? `<p class="text-indigo-200 mt-3 p-3 bg-indigo-900/50 rounded-md border border-indigo-700">${text}</p>` : `<p class="text-red-300 mt-3">Could not get AI analysis.</p>`;
+                analyzeBtn.style.display = 'none';
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                aiResultDiv.innerHTML = `<p class="text-red-300 mt-3">Could not get AI analysis. Please try again later.</p>`;
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '✨ Get AI-Driven Fraud Analysis';
+            }
+        }
+
+        
+        async function reportHandle(handle, reportType) {
+            if (!db) return;
+            const handleDocRef = doc(db, `artifacts/${appId}/public/data/reported_handles`, handle);
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const handleDoc = await transaction.get(handleDocRef);
+                    if (!handleDoc.exists()) {
+                        transaction.set(handleDocRef, {
+                            safeCount: reportType === 'safe' ? 1 : 0,
+                            fraudCount: reportType === 'fraud' ? 1 : 0,
+                            lastReported: serverTimestamp()
+                        });
+                    } else {
+                        const newSafeCount = handleDoc.data().safeCount + (reportType === 'safe' ? 1 : 0);
+                        const newFraudCount = handleDoc.data().fraudCount + (reportType === 'fraud' ? 1 : 0);
+                        transaction.update(handleDocRef, {
+                            safeCount: newSafeCount,
+                            fraudCount: newFraudCount,
+                            lastReported: serverTimestamp()
+                        });
+                    }
+                });
+                displayResult('success', 'Report Submitted', 'Thank you for helping keep the community safe!');
+            } catch (e) {
+                console.error("Transaction failed: ", e);
+                 displayResult('error', 'Report Failed', 'Could not submit your report. Please try again.');
+            }
+        }
+
+        function displayResult(status, title, message, dataForAI = null, handleToReport = null) {
+            resultContainer.innerHTML = '';
+            resultContainer.className = 'mt-4 text-center fade-in';
+            
+            let icon, colorClasses, reportButtons = '';
+            
+            switch (status) {
+                case 'success':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-green-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+                    colorClasses = 'bg-green-900/50 border-green-500';
+                    break;
+                case 'warning':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-yellow-400"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+                    colorClasses = 'bg-yellow-900/50 border-yellow-500';
+                    break;
+                case 'error':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-red-400"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+                    colorClasses = 'bg-red-900/50 border-red-500';
+                    break;
+            }
+
+            const aiButtonHtml = dataForAI ? `<button id="analyze-btn" class="mt-4 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg">✨ Get AI-Driven Fraud Analysis</button>` : '';
+
+            if (handleToReport) {
+                reportButtons = `
+                    <p class="mt-4 text-sm text-gray-400">Help the community by reporting this handle:</p>
+                    <div class="flex gap-2 mt-2">
+                        <button id="report-safe-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg">Report as Safe</button>
+                        <button id="report-fraud-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg">Report as Fraud</button>
+                    </div>`;
+            }
+
+            resultContainer.innerHTML = `<div class="p-4 rounded-lg border ${colorClasses}">${icon}<h3 class="text-xl font-bold">${title}</h3><p class="text-gray-300 break-words">${message}</p><div id="ai-result"></div>${aiButtonHtml}${reportButtons}</div>`;
+
+            if (dataForAI) document.getElementById('analyze-btn').addEventListener('click', () => analyzeWithGemini(dataForAI));
+            if (handleToReport) {
+                document.getElementById('report-safe-btn').addEventListener('click', () => reportHandle(handleToReport, 'safe'));
+                document.getElementById('report-fraud-btn').addEventListener('click', () => reportHandle(handleToReport, 'fraud'));
+            }
+        }
+        
+  
+        async function processQrText(decodedText) {
+            let upiId = null, handle = null;
+
+            if (decodedText.startsWith('upi://')) {
+                try { upiId = new URL(decodedText).searchParams.get('pa'); } catch (e) { console.error("Could not parse UPI URL:", e); }
+            } else if (decodedText.includes('@')) {
+                upiId = decodedText;
+            }
+
+            if (upiId && upiId.includes('@')) {
+                handle = upiId.split('@')[1].toLowerCase();
+                if (trustedUpiHandles[handle]) {
+                    displayResult('success', 'Bank Verified Origin', `UPI ID: ${upiId}<br>Bank: <strong>${trustedUpiHandles[handle]}</strong>`);
+                } else {
+                    if (!db) {
+                        displayResult('warning', 'Unrecognized Origin', `The handle "@${handle}" is not bank-verified. Community database is unavailable.`, { type: 'unrecognized', upiId, handle }, handle);
+                        return;
+                    }
+                    const handleDocRef = doc(db, `artifacts/${appId}/public/data/reported_handles`, handle);
+                    const docSnap = await getDoc(handleDocRef);
+
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const { safeCount = 0, fraudCount = 0 } = data;
+                        const message = `UPI ID: ${upiId}<br><strong>Community Verdict:</strong><br>${safeCount} Safe Reports | ${fraudCount} Fraud Reports`;
+                        if (fraudCount > safeCount) {
+                            displayResult('error', 'Community Warning', message, { type: 'community_warning', upiId, handle, safeCount, fraudCount }, handle);
+                        } else {
+                            displayResult('warning', 'Community Verified', message, { type: 'unrecognized', upiId, handle }, handle);
+                        }
+                    } else {
+                        displayResult('warning', 'Unrecognized Origin', `This handle is not bank-verified and has no community reports yet. Proceed with extreme caution.`, { type: 'unrecognized', upiId, handle }, handle);
+                    }
+                }
+            } else {
+                displayResult('error', 'Invalid QR Code', 'This does not appear to be a valid UPI QR code.', { type: 'invalid', rawText: decodedText });
+            }
+        }
+        
+        
+
+        function onScanSuccess(decodedText, decodedResult) {
+            stopScanning();
+            processQrText(decodedText);
+        }
+
+        function onScanError(errorMessage) { }
+        
+        function startScanning() {
+            initializeQrCodeScanner();
+            qrReaderPlaceholder.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanError)
+                .then(() => {
+                    actionButtonsContainer.classList.add('hidden');
+                    stopScanBtn.classList.remove('hidden');
+                    qrReaderContainer.style.border = '2px solid #818cf8';
+                })
+                .catch(err => {
+                    console.error("Unable to start scanning.", err);
+                    displayResult('error', 'Camera Error', 'Could not access the camera. Please check permissions.');
+                });
+        }
+        
+        function stopScanning() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.error("Failed to stop scanning.", err));
+            }
+            actionButtonsContainer.classList.remove('hidden');
+            stopScanBtn.classList.add('hidden');
+            qrReaderPlaceholder.classList.remove('hidden');
+            qrReaderContainer.style.border = '2px solid #4a5568';
+        }
+
+        uploadQrBtn.addEventListener('click', () => qrFileInput.click());
+
+        qrFileInput.addEventListener('change', async (event) => {
+            if (!event.target.files || event.target.files.length === 0) return;
+
+            const imageFile = event.target.files[0];
+            initializeQrCodeScanner();
+            
+            qrReaderPlaceholder.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            uploadQrBtn.disabled = true;
+            startScanBtn.disabled = true;
+            uploadQrBtn.innerHTML = '<div class="loader"></div> Processing...';
+
+            try {
+                const decodedText = await html5QrCode.scanFile(imageFile, true);
+                await processQrText(decodedText);
+            } catch (err) {
+                console.error(`Error scanning file.`, err);
+                displayResult('error', 'Scan Failed', 'Could not find a QR code in the selected image. Please try another one.');
+            } finally {
+                uploadQrBtn.disabled = false;
+                startScanBtn.disabled = false;
+                uploadQrBtn.innerHTML = uploadBtnOriginalHtml;
+                qrFileInput.value = ''; 
+            }
+        });
+        
+        startScanBtn.addEventListener('click', startScanning);
+        stopScanBtn.addEventListener('click', stopScanning);
+
+    </script>
+</body>
+</html>
+
