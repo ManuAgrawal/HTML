@@ -51,6 +51,19 @@
 // console.log(Array.toString);
 // console.log(arr);
 
+let promise= new Promise((res,rej)=>{
+    rej()
+
+})
+promise.then(()=>{
+    console.log("hello");
+}).catch(()=>{
+    console.log("rejected");
+})
+
+
+
+
 
 
     </script>
