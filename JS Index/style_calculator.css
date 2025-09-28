@@ -1,0 +1,108 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+}
+
+html,body{
+    height: 100%;
+    width: 100%;
+}
+
+#main{
+    
+    height: 100%;
+    width: 100%;
+    background-color: rgb(75, 7, 7);
+}
+
+
+#interface{
+    
+     display: flex;
+    flex-direction: column; 
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    
+}
+
+#display{
+    text-align: right;
+    font-size: 18px;
+}
+
+
+
+
+#row1 button{
+    margin-top: 10px;
+    gap: 20;
+    height: 40px;
+    width: 50px;
+    border-radius: 45px;
+    font-size: 25px;
+    font-weight: 10;
+}
+
+
+
+
+#row2 button{
+    margin-top: 10px;
+    gap: 20;
+    height: 40px;
+    width: 50px;
+    border-radius: 45px;
+    font-size: 25px;
+    font-weight: 10;
+}
+
+#row3 button{
+    margin-top: 10px;
+    gap: 20;
+    height: 40px;
+    width: 50px;
+    border-radius: 45px;
+    font-size: 25px;
+    font-weight: 10;
+}
+
+#row4 button{
+    margin-top: 10px;
+    gap: 20;
+    height: 40px;
+    width: 70px;
+    border-radius: 45px;
+    font-size: 25px;
+    font-weight: 10;
+}
+
+#interface input{
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    background-color: wheat;
+    
+
+}
+
+#colour1 {
+    background-color: yellow;
+}
+
+#colour2 {
+    background-color: yellow;
+}
+
+#colour3 {
+    background-color: yellow;
+}
+
+#colour4 {
+    background-color: yellow;
+}
+
+
+

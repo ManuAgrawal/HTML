@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Hackronix | Improving Urban Air Quality</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- LeafletJS CSS for the interactive map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .hero-bg {
+            background: linear-gradient(rgba(10, 20, 40, 0.8), rgba(10, 20, 40, 0.95)), url('https://placehold.co/1920x1080/0a1428/ffffff?text=Clean+City+Skyline') no-repeat center center;
+            background-size: cover;
+        }
+        .section-title {
+            font-weight: 900;
+            font-size: 2.5rem;
+            line-height: 1.2;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #4f46e5, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        .phase-line::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            bottom: 2rem;
+            width: 2px;
+            background-color: #374151;
+            transform: translateX(-50%);
+        }
+        @media (max-width: 768px) {
+            .phase-line::before {
+                left: 2rem;
+                top: 50%;
+                bottom: auto;
+                width: calc(100% - 4rem);
+                height: 2px;
+                transform: translateY(-50%);
+            }
+             .phase-item {
+                padding-left: 0;
+                padding-top: 4rem;
+                width: 33.333%;
+            }
+        }
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        /* Style for the map container */
+        #map {
+            height: 100%;
+            min-height: 450px;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <!-- Header / Hero Section -->
+    <header class="hero-bg pt-20 md:pt-32">
+        <div class="container mx-auto px-6 text-center">
+            <div class="max-w-4xl mx-auto">
+                <p class="text-blue-400 font-semibold uppercase tracking-wider">NASA Space Apps Challenge 2025</p>
+                <h1 class="text-4xl md:text-6xl font-black text-white my-4 leading-tight">Using NASA Data to Improve Urban Air Quality & Public Health</h1>
+                <p class="text-lg md:text-xl text-gray-300 mt-6 mb-12">Smart data. Cleaner air. Healthier cities. A solution by Team Hackronix.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav bg-gray-900/70 border-b border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-center items-center h-16">
+                <div class="flex space-x-6 md:space-x-10 text-sm md:text-base">
+                    <a href="#problem" class="text-gray-300 hover:text-white transition">The Problem</a>
+                    <a href="#dashboard" class="text-gray-300 hover:text-white transition">Live Dashboard</a>
+                    <a href="#impact" class="text-gray-300 hover:text-white transition">Our Impact</a>
+                    <a href="#roadmap" class="text-gray-300 hover:text-white transition">Roadmap</a>
+                    <a href="#team" class="text-gray-300 hover:text-white transition">Team</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- The Problem Section -->
+        <section id="problem" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-white">A <span class="gradient-text">Growing Urban Health</span> Crisis</h2>
+                    <p class="mt-4 text-lg text-gray-400">Air pollution is a silent threat impacting millions. Our cities are at a critical point, and effective action requires reliable, high-resolution data.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 mt-12 text-center">
+                    <div class="card p-8 rounded-xl">
+                        <h3 class="text-5xl font-bold text-blue-400">99%</h3>
+                        <p class="mt-2 text-gray-300">of the world's population breathes air that exceeds WHO guideline limits.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl">
+                        <h3 class="text-5xl font-bold text-blue-400">1.6M</h3>
+                        <p class="mt-2 text-gray-300">premature deaths in India annually are attributed to air pollution.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl">
+                         <h3 class="text-5xl font-bold text-blue-400">2x</h3>
+                        <p class="mt-2 text-gray-300">Rapid urbanization and climate change are exacerbating pollution levels.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NASA Data Section -->
+        <section id="data" class="py-16 md:py-24 bg-gray-800/50">
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="section-title text-white">Powered by <span class="gradient-text">NASA Earth Observation</span> Data</h2>
+                    <p class="mt-4 text-lg text-gray-400">We leverage NASA's free, global, and validated data to get a clear picture of air quality. This powerful resource is the foundation of our solution.</p>
+                    <div class="mt-8 space-y-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                                <!-- Satellite Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-xl font-bold text-white">Aura OMI & MODIS</h4>
+                                <p class="text-gray-400">Measures key pollutants like NO₂, Ozone, and Aerosol Optical Depth (a proxy for PM₂.₅).</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                             <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                                <!-- Globe Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.72 9.3l.001-.001M16.28 9.3l-.001-.001M12 12.016V12m0 0a2 2 0 100 4 2 2 0 000-4zM3 21h18M3 12h18"/></svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-xl font-bold text-white">Sentinel / Landsat</h4>
+                                <p class="text-gray-400">Provides insights into land use, vegetation, and the formation of urban heat islands.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10 md:mt-0">
+                    <img src="https://placehold.co/600x400/111827/3b82f6?text=NASA+Data+Visualization" alt="Map of India showing pollution levels" class="rounded-xl shadow-2xl">
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Approach -->
+        <section id="approach" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-white">The <span class="gradient-text">Hackronix Framework</span></h2>
+                    <p class="mt-4 text-lg text-gray-400">Our approach transforms raw data into meaningful change through a clear, three-step process designed to create healthier communities.</p>
+                </div>
+                <div class="mt-16 max-w-4xl mx-auto grid md:grid-cols-3 gap-8 text-center relative">
+                     <!-- Icons and text for each step -->
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center justify-center h-20 w-20 rounded-full bg-blue-900 border-2 border-blue-700 text-blue-400">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>
+                        </div>
+                        <h3 class="mt-4 text-2xl font-bold text-white">Data Collection</h3>
+                        <p class="text-gray-400 mt-2">Aggregating satellite imagery and ground sensor data.</p>
+                    </div>
+                     <div class="flex flex-col items-center">
+                        <div class="flex items-center justify-center h-20 w-20 rounded-full bg-blue-900 border-2 border-blue-700 text-blue-400">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </div>
+                        <h3 class="mt-4 text-2xl font-bold text-white">Analysis</h3>
+                        <p class="text-gray-400 mt-2">Identifying pollution hotspots and trends.</p>
+                    </div>
+                     <div class="flex flex-col items-center">
+                        <div class="flex items-center justify-center h-20 w-20 rounded-full bg-blue-900 border-2 border-blue-700 text-blue-400">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 class="mt-4 text-2xl font-bold text-white">Actionable Insights</h3>
+                        <p class="text-gray-400 mt-2">Providing clear recommendations for urban planners.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Live Dashboard Section -->
+        <section id="dashboard" class="py-16 md:py-24 bg-gray-800/50">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-white">Live Air Quality <span class="gradient-text">Dashboard (Prototype)</span></h2>
+                    <p class="mt-4 text-lg text-gray-400">This interactive prototype demonstrates how our tool visualizes data to provide real-time insights for citizens and city planners.</p>
+                </div>
+
+                <div class="mt-12 max-w-6xl mx-auto bg-gray-900/50 p-8 rounded-2xl border border-gray-700 grid lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Map and Controls -->
+                    <div class="lg:col-span-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                            <h3 class="text-2xl font-bold text-white">Pollution Hotspots</h3>
+                            <div class="mt-3 sm:mt-0">
+                                <label for="city-select" class="sr-only">Select City</label>
+                                <select id="city-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                    <option value="jabalpur">Jabalpur</option>
+                                    <option value="delhi">Delhi</option>
+                                    <option value="mumbai">Mumbai</option>
+                                    <option value="bengaluru">Bengaluru</option>
+                                    <option value="chennai">Chennai</option>
+                                    <option value="kolkata">Kolkata</option>
+                                    <option value="bhopal">Bhopal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="aspect-video bg-gray-800 rounded-lg">
+                             <!-- Map container -->
+                             <div id="map"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Data and Advisory -->
+                    <div class="lg:col-span-1 space-y-6">
+                         <h3 class="text-2xl font-bold text-white">Current Readings</h3>
+                        <div class="card p-4 rounded-lg">
+                            <h4 class="text-sm text-gray-400">PM₂.₅ Concentration</h4>
+                            <p class="text-3xl font-bold text-white">
+                                <span id="pm25-value">158</span> µg/m³ 
+                                <span id="pm25-label" class="text-sm font-semibold ml-2 align-middle"></span>
+                            </p>
+                            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
+                                <div id="pm25-bar" class="bg-red-500 h-2.5 rounded-full" style="width: 79%"></div>
+                            </div>
+                        </div>
+                         <div class="card p-4 rounded-lg">
+                            <h4 class="text-sm text-gray-400">NO₂ Levels</h4>
+                            <p class="text-3xl font-bold text-white">
+                                <span id="no2-value">45</span> ppb
+                                <span id="no2-label" class="text-sm font-semibold ml-2 align-middle"></span>
+                            </p>
+                             <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
+                                <div id="no2-bar" class="bg-yellow-500 h-2.5 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div id="advisory-card" class="bg-red-900/50 border border-red-700 p-4 rounded-lg">
+                            <h4 id="advisory-title" class="font-bold text-red-300">Health Advisory: Unhealthy</h4>
+                            <p id="advisory-text" class="text-sm text-red-200 mt-1">Air quality is poor. It's recommended to reduce prolonged or heavy exertion outdoors. Sensitive groups should avoid outdoor activities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Real World Change Section -->
+        <section id="impact" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-white">From Data to <span class="gradient-text">Real-World Change</span></h2>
+                    <p class="mt-4 text-lg text-gray-400">Our insights directly inform tangible interventions that make a difference in people's lives.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 mt-12">
+                    <div class="card p-8 rounded-xl text-center">
+                        <h3 class="text-xl font-bold text-white">Traffic Management Zones</h3>
+                        <p class="mt-2 text-gray-400">Restrict high-emission vehicles in pollution hotspots to immediately improve air quality.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <h3 class="text-xl font-bold text-white">Green Corridors</h3>
+                        <p class="mt-2 text-gray-400">Guide targeted tree planting and green space development in the most critical areas.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <h3 class="text-xl font-bold text-white">Public Health Alerts</h3>
+                        <p class="mt-2 text-gray-400">Notify sensitive groups, like the elderly and children, during high-pollution events.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Our Solution Matters Section -->
+        <section id="matters" class="py-16 md:py-24 bg-gray-800/50">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-white">Why Our Solution <span class="gradient-text">Matters</span></h2>
+                    <p class="mt-4 text-lg text-gray-400">Our work creates a ripple effect of positive change, benefiting individuals, cities, and the planet while aligning with global sustainability goals.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 mt-12">
+                    <div class="card p-8 rounded-xl">
+                        <h3 class="text-xl font-bold text-white">For People</h3>
+                        <p class="mt-2 text-gray-400">Reduced respiratory illnesses and a tangible improvement in daily quality of life.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl">
+                        <h3 class="text-xl font-bold text-white">For Government</h3>
+                        <p class="mt-2 text-gray-400">Data-backed decision-making enables efficient resource allocation and impactful policy changes.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl">
+                        <h3 class="text-xl font-bold text-white">For The Planet</h3>
+                        <p class="mt-2 text-gray-400">Lower carbon emissions, increased green cover, and more sustainable urban environments.</p>
+                    </div>
+                </div>
+                <div class="mt-12 text-center text-gray-400 max-w-2xl mx-auto">
+                    <p>Our project directly supports UN Sustainable Development Goals:</p>
+                    <p class="font-bold text-white mt-2">SDG 3 (Good Health and Well-being) & SDG 11 (Sustainable Cities and Communities).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section id="roadmap" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-white">Our Project <span class="gradient-text">Roadmap</span></h2>
+                    <p class="mt-4 text-lg text-gray-400">From a hackathon prototype to a scalable, AI-driven platform for cities worldwide.</p>
+                </div>
+                <div class="mt-20 max-w-5xl mx-auto">
+                    <div class="relative">
+                        <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-700 -translate-y-1/2"></div>
+                        <div class="relative flex justify-between">
+                            <div class="w-1/3 text-center px-4">
+                                <div class="relative mb-4">
+                                    <div class="mx-auto w-10 h-10 rounded-full bg-blue-500 border-2 border-blue-300 flex items-center justify-center text-white font-bold">1</div>
+                                </div>
+                                <h3 class="text-lg font-bold text-white">Phase 1: Prototype</h3>
+                                <p class="text-sm text-gray-400">A functional dashboard built during the hackathon using NASA APIs.</p>
+                            </div>
+                            <div class="w-1/3 text-center px-4">
+                                <div class="relative mb-4">
+                                     <div class="mx-auto w-10 h-10 rounded-full bg-gray-700 border-2 border-gray-500 flex items-center justify-center text-white font-bold">2</div>
+                                </div>
+                                <h3 class="text-lg font-bold text-white">Phase 2: Pilot</h3>
+                                <p class="text-sm text-gray-400">Pilot program in Jabalpur, integrating local health and sensor data.</p>
+                            </div>
+                            <div class="w-1/3 text-center px-4">
+                                <div class="relative mb-4">
+                                    <div class="mx-auto w-10 h-10 rounded-full bg-gray-700 border-2 border-gray-500 flex items-center justify-center text-white font-bold">3</div>
+                                </div>
+                                <h3 class="text-lg font-bold text-white">Phase 3: Scale</h3>
+                                <p class="text-sm text-gray-400">Expand to multiple cities and add AI-powered predictive models.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Future Vision Section -->
+        <section id="future" class="py-16 md:py-24 bg-gray-800/50">
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <div class="mt-10 md:mt-0">
+                     <img src="https://placehold.co/600x400/111827/3b82f6?text=Futuristic+Green+City" alt="Futuristic green city" class="rounded-xl shadow-2xl">
+                </div>
+                <div>
+                    <h2 class="section-title text-white">Building a <span class="gradient-text">Breathable Future</span></h2>
+                    <p class="mt-4 text-lg text-gray-400">Our vision extends beyond monitoring. We aim to create a predictive and integrated system for proactive urban management.</p>
+                    <div class="mt-8 space-y-4">
+                        <p class="text-gray-300"><span class="font-bold text-blue-400">Higher Accuracy:</span> Combine satellite data with ground-based IoT sensors for hyper-local insights.</p>
+                        <p class="text-gray-300"><span class="font-bold text-blue-400">Predictive Forecasting:</span> Use machine learning to forecast pollution events 24-48 hours in advance.</p>
+                        <p class="text-gray-300"><span class="font-bold text-blue-400">Seamless Integration:</span> Integrate our platform with existing urban planning apps and smart city dashboards.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Team Section -->
+        <section id="team" class="py-16 md:py-24 bg-gray-900">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title text-white">Meet <span class="gradient-text">Team Hackronix</span></h2>
+                <div class="mt-8 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 text-gray-300 text-lg">
+                    <p>Harsh Wathrey (Leader)</p>
+                    <p>Harshit Kumar Sharma</p>
+                    <p>Kratika Shrivastava</p>
+                    <p>Narayani Mishra</p>
+                    <p>Manu Agrawal</p>
+                    <p>Mudit Tripathi</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800">
+        <div class="container mx-auto py-8 px-6 text-center text-gray-500">
+            <p>&copy; 2025 Team Hackronix. All rights reserved.</p>
+            <p class="mt-2 text-sm">"Let's make our cities breathable!"</p>
+        </div>
+    </footer>
+
+    <!-- LeafletJS for the interactive map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script>
+        const citySelect = document.getElementById('city-select');
+        
+        const pm25Value = document.getElementById('pm25-value');
+        const no2Value = document.getElementById('no2-value');
+        const pm25Bar = document.getElementById('pm25-bar');
+        const no2Bar = document.getElementById('no2-bar');
+        const pm25Label = document.getElementById('pm25-label');
+        const no2Label = document.getElementById('no2-label');
+
+        const advisoryCard = document.getElementById('advisory-card');
+        const advisoryTitle = document.getElementById('advisory-title');
+        const advisoryText = document.getElementById('advisory-text');
+
+        const cityData = {
+            jabalpur: { name: "Jabalpur", pm25: 158, no2: 45, coords: [23.1815, 79.9864] },
+            delhi: { name: "Delhi", pm25: 210, no2: 65, coords: [28.7041, 77.1025] },
+            mumbai: { name: "Mumbai", pm25: 85, no2: 30, coords: [19.0760, 72.8777] },
+            bengaluru: { name: "Bengaluru", pm25: 70, no2: 25, coords: [12.9716, 77.5946] },
+            chennai: { name: "Chennai", pm25: 95, no2: 35, coords: [13.0827, 80.2707] },
+            kolkata: { name: "Kolkata", pm25: 180, no2: 50, coords: [22.5726, 88.3639] },
+            bhopal: { name: "Bhopal", pm25: 120, no2: 40, coords: [23.2599, 77.4126] }
+        };
+
+        // Map variables
+        let map;
+        let marker;
+
+        // Function to initialize the map
+        function initMap() {
+            // Map ko 'map' ID wale div mein initialize karein
+            map = L.map('map').setView(cityData.jabalpur.coords, 10);
+            
+            // OpenStreetMap se map tiles add karein
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Initial marker add karein
+            marker = L.marker(cityData.jabalpur.coords).addTo(map);
+        }
+
+        function updateDashboard(city) {
+            const data = cityData[city];
+            
+            // Update values
+            pm25Value.textContent = data.pm25;
+            no2Value.textContent = data.no2;
+
+            // Update Map View and Marker
+            map.setView(data.coords, 10);
+            marker.setLatLng(data.coords);
+            marker.bindPopup(`<b>${data.name}</b><br>PM₂.₅: ${data.pm25} µg/m³`).openPopup();
+
+            // Update progress bars
+            const pm25Percent = Math.min(100, (data.pm25 / 250) * 100);
+            pm25Bar.style.width = `${pm25Percent}%`;
+            
+            const no2Percent = Math.min(100, (data.no2 / 100) * 100);
+            no2Bar.style.width = `${no2Percent}%`;
+
+            // Update colors, labels, and advisory based on PM2.5
+            if (data.pm25 > 150) { // Unhealthy
+                pm25Bar.className = 'bg-red-500 h-2.5 rounded-full';
+                pm25Label.textContent = '(Unhealthy)';
+                pm25Label.className = 'text-sm font-semibold ml-2 align-middle text-red-400';
+                advisoryCard.className = 'bg-red-900/50 border border-red-700 p-4 rounded-lg';
+                advisoryTitle.className = 'font-bold text-red-300';
+                advisoryTitle.textContent = 'Health Advisory: Unhealthy';
+                advisoryText.className = 'text-sm text-red-200 mt-1';
+                advisoryText.textContent = "Air quality is poor. It's recommended to reduce prolonged or heavy exertion outdoors. Sensitive groups should avoid outdoor activities.";
+            } else if (data.pm25 > 50) { // Moderate
+                pm25Bar.className = 'bg-yellow-500 h-2.5 rounded-full';
+                pm25Label.textContent = '(Moderate)';
+                pm25Label.className = 'text-sm font-semibold ml-2 align-middle text-yellow-400';
+                advisoryCard.className = 'bg-yellow-900/50 border border-yellow-700 p-4 rounded-lg';
+                advisoryTitle.className = 'font-bold text-yellow-300';
+                advisoryTitle.textContent = 'Health Advisory: Moderate';
+                advisoryText.className = 'text-sm text-yellow-200 mt-1';
+                advisoryText.textContent = "Air quality is acceptable, but sensitive individuals may experience minor respiratory symptoms.";
+            } else { // Good
+                pm25Bar.className = 'bg-green-500 h-2.5 rounded-full';
+                pm25Label.textContent = '(Good)';
+                pm25Label.className = 'text-sm font-semibold ml-2 align-middle text-green-400';
+                advisoryCard.className = 'bg-green-900/50 border border-green-700 p-4 rounded-lg';
+                advisoryTitle.className = 'font-bold text-green-300';
+                advisoryTitle.textContent = 'Health Advisory: Good';
+                advisoryText.className = 'text-sm text-green-200 mt-1';
+                advisoryText.textContent = 'Air quality is satisfactory, and air pollution poses little or no risk.';
+            }
+
+            // Update NO2 bar color based on its value (simple scale)
+            if (data.no2 > 50) {
+                 no2Bar.className = 'bg-red-500 h-2.5 rounded-full';
+                 no2Label.textContent = '(High)';
+                 no2Label.className = 'text-sm font-semibold ml-2 align-middle text-red-400';
+            } else if (data.no2 > 25) {
+                 no2Bar.className = 'bg-yellow-500 h-2.5 rounded-full';
+                 no2Label.textContent = '(Moderate)';
+                 no2Label.className = 'text-sm font-semibold ml-2 align-middle text-yellow-400';
+            } else {
+                 no2Bar.className = 'bg-green-500 h-2.5 rounded-full';
+                 no2Label.textContent = '(Low)';
+                 no2Label.className = 'text-sm font-semibold ml-2 align-middle text-green-400';
+            }
+        }
+
+        citySelect.addEventListener('change', (e) => {
+            updateDashboard(e.target.value);
+        });
+
+        // Initialize map on page load
+        initMap();
+        // Load initial data for the default city
+        updateDashboard('jabalpur');
+    </script>
+
+</body>
+</html>
+

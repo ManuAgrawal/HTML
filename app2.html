@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incuverse - AI Travel Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .hero-bg {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1528543606781-2f6e6857f318?q=80&w=1965&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        #sos-button {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe-2 text-blue-500"><path d="M15 21v-4a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4"/><path d="M12 3a9 9 0 0 1 9 9c0 2.5-1 4.8-2.7 6.4"/><path d="M3.6 15.3A9 9 0 0 1 21 12a9 9 0 0 1-1.3 4.8"/><path d="M12 3a9 9 0 0 0-8.7 6.6"/><circle cx="12" cy="12" r="10"/></svg>
+                <h1 class="text-xl font-bold text-gray-700">Incuverse Travel</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#planner" class="text-gray-600 hover:text-blue-500">Plan Trip</a>
+                <a href="#features" class="text-gray-600 hover:text-blue-500">Features</a>
+                <button id="settings-btn" class="text-gray-600 hover:text-blue-500">
+                    <i data-lucide="settings"></i>
+                </button>
+                <button id="sos-button" class="bg-red-500 text-white font-bold py-2 px-4 rounded-full flex items-center space-x-2">
+                    <i data-lucide="siren"></i>
+                    <span>SOS</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-white h-[60vh] flex items-center justify-center">
+        <div class="text-center">
+            <h2 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">Aapka Perfect Safar, AI ke Saath</h2>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto drop-shadow-md">Apne budget aur pasand ke hisaab se personalized travel plans banayein.</p>
+        </div>
+    </section>
+
+    <main class="container mx-auto p-6">
+        <!-- AI Itinerary Planner Section -->
+        <section id="planner" class="bg-white p-8 rounded-2xl shadow-lg -mt-20 z-10 relative">
+            <h3 class="text-2xl font-bold mb-6 text-center text-gray-700">AI se apna agla trip plan karein</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Inputs -->
+                <div class="">
+                    <label for="destination" class="block text-sm font-medium text-gray-600 mb-1">Destination</label>
+                    <input type="text" id="destination" placeholder="e.g., Paris, Goa" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div class="">
+                    <label for="duration" class="block text-sm font-medium text-gray-600 mb-1">Duration (days)</label>
+                    <input type="number" id="duration" placeholder="e.g., 5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div class="">
+                    <label for="budget" class="block text-sm font-medium text-gray-600 mb-1">Budget (INR)</label>
+                    <input type="number" id="budget" placeholder="e.g., 50000" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div class="">
+                    <label for="interests" class="block text-sm font-medium text-gray-600 mb-1">Interests <span class="text-gray-400">(Optional)</span></label>
+                    <input type="text" id="interests" placeholder="e.g., Adventure, Beaches, Food" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button id="generate-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-lg text-lg flex items-center justify-center mx-auto space-x-2">
+                    <i data-lucide="wand-2"></i>
+                    <span>Generate Itinerary</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Itinerary Display Section -->
+        <section id="itinerary-display" class="mt-12 min-h-[200px]">
+            <!-- Loading spinner -->
+            <div id="loading-spinner" class="hidden flex flex-col items-center justify-center text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+                <p id="loading-text" class="mt-4 text-gray-600 w-full md:w-1/2">Aapke liye behtareen plan taiyaar kar rahe hain...</p>
+            </div>
+            <!-- Error message -->
+            <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+                <strong class="font-bold">Oops! </strong>
+                <span class="block sm:inline">Kuch galat ho gaya. Please dobara try karein.</span>
+            </div>
+            <!-- Welcome message -->
+            <div id="welcome-message" class="text-center text-gray-500">
+                <h3 class="text-xl font-semibold">Aapka personalized travel plan yahan dikhega.</h3>
+                <p>Upar di gayi details bharein aur jaadu dekhein!</p>
+            </div>
+            <!-- Generated Itinerary -->
+            <div id="itinerary-content" class="hidden">
+                 <!-- Hotels and Itinerary will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- Other Features Section -->
+        <section id="features" class="mt-16">
+            <h3 class="text-2xl font-bold mb-8 text-center text-gray-700">Sab Kuch Ek Hi Jagah</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-xl hover:-translate-y-1 transition-all">
+                    <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="hotel" class="text-blue-500"></i>
+                    </div>
+                    <h4 class="font-bold text-lg">Hotel Booking</h4>
+                    <p class="text-gray-600 text-sm">Best deals aur price comparison.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-xl hover:-translate-y-1 transition-all">
+                    <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="plane" class="text-green-500"></i>
+                    </div>
+                    <h4 class="font-bold text-lg">Travel Info</h4>
+                    <p class="text-gray-600 text-sm">Flights, trains, aur transport options.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-xl hover:-translate-y-1 transition-all">
+                    <div class="bg-yellow-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="map" class="text-yellow-500"></i>
+                    </div>
+                    <h4 class="font-bold text-lg">Offline Maps</h4>
+                    <p class="text-gray-600 text-sm">Bina internet ke bhi raasta na bhoolein.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-xl hover:-translate-y-1 transition-all">
+                    <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="shield-check" class="text-purple-500"></i>
+                    </div>
+                    <h4 class="font-bold text-lg">Safety Alerts</h4>
+                    <p class="text-gray-600 text-sm">Real-time alerts aur safety tips.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16 py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Incuverse Travel by CodeMAHAS. All rights reserved.</p>
+            <p class="text-sm text-gray-400 mt-1">Ek behtar aur surakshit travel experience ke liye.</p>
+        </div>
+    </footer>
+
+    <!-- SOS Modal -->
+    <div id="sos-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full text-center">
+            <i data-lucide="siren" class="text-red-500 h-16 w-16 mx-auto mb-4"></i>
+            <h2 class="text-2xl font-bold text-red-600 mb-4">Emergency Alert!</h2>
+            <p class="text-gray-700 mb-6">Aapki current location authorities ke paas bhej di gayi hai. Shanti banaye rakhein.</p>
+            <div class="space-y-3">
+                <p class="font-semibold">Important Contacts:</p>
+                <p>Police: <a href="tel:100" class="text-blue-600">100</a></p>
+                <p>Ambulance: <a href="tel:102" class="text-blue-600">102</a></p>
+                <p>National Emergency Number: <a href="tel:112" class="text-blue-600">112</a></p>
+            </div>
+            <button id="close-sos-modal" class="mt-8 bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg hover:bg-gray-400">Close</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full relative">
+            <button id="close-settings-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <i data-lucide="x"></i>
+            </button>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Settings</h2>
+            <p class="text-gray-600 mb-6">Local development ke liye apni Gemini API key yahan save karein.</p>
+            <div>
+                <label for="api-key-input" class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
+                <input type="password" id="api-key-input" placeholder="Apni API key yahan paste karein" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                <p class="text-xs text-gray-500 mt-1">Key aapke browser mein surakshit save ho jayegi. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 hover:underline">Nayi key banayein</a>.</p>
+            </div>
+            <div id="api-key-success" class="hidden mt-4 text-green-600 text-sm">API Key saved successfully!</div>
+            <div class="mt-8 text-right">
+                <button id="save-api-key-btn" class="btn-primary text-white font-bold py-2 px-6 rounded-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        lucide.createIcons();
+
+        const generateBtn = document.getElementById('generate-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const errorMessage = document.getElementById('error-message');
+        const itineraryContent = document.getElementById('itinerary-content');
+        const welcomeMessage = document.getElementById('welcome-message');
+
+        const sosButton = document.getElementById('sos-button');
+        const sosModal = document.getElementById('sos-modal');
+        const closeSosModal = document.getElementById('close-sos-modal');
+
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettingsModal = document.getElementById('close-settings-modal');
+        const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const apiKeySuccess = document.getElementById('api-key-success');
+
+        let loadingInterval;
+        const loadingMessages = [
+            "Aapke liye behtareen plan taiyaar kar rahe hain...",
+            "Sabse achhe hotels dhoondh rahe hain...",
+            "Secret spots aur hidden gems khoj rahe hain...",
+            "Aapke budget ka poora dhyaan rakh rahe hain...",
+            "Bas thoda aur intezaar, aapka perfect trip taiyaar hai!"
+        ];
+        
+        // Load API key from local storage on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('geminiApiKey');
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+            }
+        });
+
+        // Modal event listeners
+        sosButton.addEventListener('click', () => sosModal.classList.remove('hidden'));
+        closeSosModal.addEventListener('click', () => sosModal.classList.add('hidden'));
+        settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+        closeSettingsModal.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+        // Save API Key to local storage
+        saveApiKeyBtn.addEventListener('click', () => {
+            const key = apiKeyInput.value;
+            if (key) {
+                localStorage.setItem('geminiApiKey', key);
+                apiKeySuccess.classList.remove('hidden');
+                setTimeout(() => {
+                    apiKeySuccess.classList.add('hidden');
+                    settingsModal.classList.add('hidden');
+                }, 1500);
+            }
+        });
+
+        generateBtn.addEventListener('click', () => {
+            const destination = document.getElementById('destination').value;
+            const duration = document.getElementById('duration').value;
+            const budget = document.getElementById('budget').value;
+            const interests = document.getElementById('interests').value;
+            const apiKey = localStorage.getItem('geminiApiKey');
+
+            errorMessage.classList.add('hidden');
+
+            if (!destination || !duration || !budget) {
+                errorMessage.querySelector('span').textContent = 'Kripya Destination, Duration, aur Budget bharein.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            if (!apiKey) {
+                errorMessage.querySelector('span').textContent = 'Kripya Settings mein jaakar apni Gemini API Key save karein.';
+                errorMessage.classList.remove('hidden');
+                settingsModal.classList.remove('hidden'); // Open settings if key is missing
+                return;
+            }
+
+
+            // UI updates for loading
+            itineraryContent.innerHTML = '';
+            itineraryContent.classList.add('hidden');
+            welcomeMessage.classList.add('hidden');
+            loadingSpinner.classList.remove('hidden');
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            const loadingText = document.getElementById('loading-text');
+            let messageIndex = 0;
+            loadingText.textContent = loadingMessages[messageIndex];
+            loadingInterval = setInterval(() => {
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+                loadingText.textContent = loadingMessages[messageIndex];
+            }, 2500);
+
+            callGeminiApi(destination, duration, budget, interests, apiKey);
+        });
+        
+        async function callGeminiApi(destination, duration, budget, interests, apiKey) {
+            
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const systemPrompt = "You are an expert travel planner from India. Your response should be in Hinglish (Hindi written in English script). Create a practical and engaging travel plan. Provide realistic costs in INR. The hotel booking links should be placeholders like '#'.";
+
+            let userQuery = `
+                Ek travel itinerary banayein:
+                - Destination: ${destination}
+                - Duration: ${duration} din
+                - Budget: INR ${budget}
+                ${interests ? `- Interests: ${interests}` : ''}
+
+                Output ek JSON object hona chahiye. Hotels ko 'budget', 'mid-range', aur 'luxury' categories mein suggest karein. Daily plan mein time, activity description, aur estimated cost (INR mein) shamil karein.
+            `;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "suggestedHotels": {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "name": { "type": "STRING" },
+                                        "priceRange": { "type": "STRING", "enum": ["Budget", "Mid-range", "Luxury"] },
+                                        "description": { "type": "STRING" },
+                                    }
+                                }
+                            },
+                            "itinerary": {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "day": { "type": "NUMBER" },
+                                        "title": { "type": "STRING" },
+                                        "activities": {
+                                            type: "ARRAY",
+                                            items: {
+                                                type: "OBJECT",
+                                                properties: {
+                                                    "time": { "type": "STRING" },
+                                                    "description": { "type": "STRING" },
+                                                    "cost": { "type": "STRING" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const parsedJson = JSON.parse(candidate.content.parts[0].text);
+                    displayItinerary(parsedJson, destination);
+                } else {
+                    throw new Error("Invalid response structure from API.");
+                }
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                clearInterval(loadingInterval);
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                loadingSpinner.classList.add('hidden');
+                const errorSpan = errorMessage.querySelector('span');
+                 if (error.message.includes("400")) {
+                    errorSpan.textContent = "API Key galat hai. Kripya Settings mein jaakar sahi key daalein.";
+                } else if (error.message.includes("401") || error.message.includes("403")) {
+                    errorSpan.textContent = "Authentication fail ho gayi. Kripya apni API key check karein.";
+                } else {
+                    errorSpan.textContent = "Kuch galat ho gaya. Please dobara try karein.";
+                }
+                errorMessage.classList.remove('hidden');
+            }
+        }
+        
+        function displayItinerary(data, destination) {
+            clearInterval(loadingInterval);
+            generateBtn.disabled = false;
+            generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            loadingSpinner.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            
+            let html = `<h2 class="text-3xl font-bold mb-8 text-center text-gray-800">${destination.charAt(0).toUpperCase() + destination.slice(1)} Trip Plan</h2>`;
+
+            // Display Hotels
+            if (data.suggestedHotels && data.suggestedHotels.length > 0) {
+                html += `<div class="mb-12">
+                            <h3 class="text-2xl font-semibold mb-4 text-gray-700 flex items-center"><i data-lucide="hotel" class="mr-2"></i>Suggested Hotels</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                data.suggestedHotels.forEach(hotel => {
+                    let badgeColor = 'bg-green-100 text-green-800';
+                    if (hotel.priceRange === 'Mid-range') badgeColor = 'bg-yellow-100 text-yellow-800';
+                    if (hotel.priceRange === 'Luxury') badgeColor = 'bg-red-100 text-red-800';
+
+                    html += `<div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-bold text-lg">${hotel.name}</h4>
+                                    <span class="text-xs font-semibold px-2 py-1 rounded-full ${badgeColor}">${hotel.priceRange}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">${hotel.description}</p>
+                                <a href="#" class="inline-block mt-4 text-sm text-blue-600 font-semibold hover:underline">Book Now &rarr;</a>
+                            </div>`;
+                });
+                html += `</div></div>`;
+            }
+
+            // Display Itinerary
+            if (data.itinerary && data.itinerary.length > 0) {
+                html += `<div>
+                            <h3 class="text-2xl font-semibold mb-6 text-gray-700 flex items-center"><i data-lucide="calendar-days" class="mr-2"></i>Daily Plan</h3>
+                            <div class="space-y-8">`;
+                
+                data.itinerary.forEach(day => {
+                    html += `<div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                <h4 class="text-xl font-bold text-blue-600 mb-4">Day ${day.day}: ${day.title}</h4>
+                                <ul class="border-l-2 border-blue-200 ml-2 pl-4 space-y-4">`;
+                    day.activities.forEach(activity => {
+                        html += `<li class="relative">
+                                    <span class="absolute -left-[23px] top-1 h-4 w-4 bg-white border-2 border-blue-500 rounded-full"></span>
+                                    <p class="font-semibold text-gray-700">${activity.time}</p>
+                                    <p class="text-gray-600">${activity.description}</p>
+                                    <p class="text-sm text-gray-500 font-medium">Cost: ${activity.cost}</p>
+                                </li>`;
+                    });
+                    html += `</ul></div>`;
+                });
+
+                html += `</div></div>`;
+            }
+
+            itineraryContent.innerHTML = html;
+            itineraryContent.classList.remove('hidden');
+            lucide.createIcons(); // Re-render icons after adding new HTML
+        }
+
+    </script>
+</body>
+</html>
+
